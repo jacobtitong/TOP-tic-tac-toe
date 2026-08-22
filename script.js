@@ -1,6 +1,32 @@
 // Single instances: GameBoard, GameController, Player
+const GameBoard = (() => {
+  let board = [];
 
-const players = (() => {
+  (function initializeBoard() {
+    for (let i = 0; i < 3; i++) {
+      const row = [];
+      for (let j = 0; j < 3; j++) {
+        row.push(0);
+      }
+      board.push(row);
+    }
+  })();
+
+  const placeMark = (row, column, playerToken) => {
+    board[row][column] = playerToken;
+    printBoard();
+  };
+
+  const printBoard = () => {
+    console.log(board);
+  };
+
+  const getBoard = () => board;
+
+  return { placeMark, getBoard };
+})();
+
+const Players = (() => {
   const playerDetails = [
     {
       name: "Player One",
