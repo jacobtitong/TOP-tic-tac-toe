@@ -27,7 +27,15 @@ const GameBoard = (() => {
     board[row][column].addToken(playerToken);
     const getRowArray = setRowArray(row);
     const getColumnArray = setColumnArray(column);
-    return { status: true, getRowArray, getColumnArray };
+    const getPrimaryArray = setPrimaryArray(row, column);
+    const getSecondaryArray = setSecondaryArray(row, column);
+    return {
+      status: true,
+      getRowArray,
+      getColumnArray,
+      getPrimaryArray,
+      getSecondaryArray,
+    };
   };
 
   const setRowArray = (row) => {
@@ -38,6 +46,41 @@ const GameBoard = (() => {
   const setColumnArray = (column) => {
     const columnArray = board.map((row) => row[column]);
     return columnArray;
+  };
+
+  //   Although this could be much simpler, I applied the same logic I used when creating the "Connect Four" game!
+  const setPrimaryArray = (row, column) => {
+    const primaryDiagonal = [];
+    const range = Math.min(row, column);
+    let topMostRow = row - range;
+    let leftMostColumn = column - range;
+    let currentCell = board[topMostRow][leftMostColumn];
+
+    while (topMostRow <= 2 && leftMostColumn <= 2) {
+      primaryDiagonal.push(currentCell);
+      if (topMostRow == 2 || leftMostColumn == 2) break;
+      currentCell = board[++topMostRow][++leftMostColumn];
+    }
+    return primaryDiagonal;
+  };
+
+  const setSecondaryArray = (row, column) => {
+    const secondaryDiagonal = [];
+    let bottomMostRow = 2;
+    let leftMostColumn = 0;
+    const rowRange = bottomMostRow - row;
+    const rowColumn = column - leftMostColumn;
+    const range = Math.min(rowRange, rowColumn);
+    bottomMostRow = row + range;
+    leftMostColumn = column - range;
+    let currentCell = board[bottomMostRow][leftMostColumn];
+
+    while (bottomMostRow >= 0 && leftMostColumn <= 2) {
+      secondaryDiagonal.push(currentCell);
+      if (bottomMostRow == 0 || leftMostColumn == 2) break;
+      currentCell = board[--bottomMostRow][++leftMostColumn];
+    }
+    return secondaryDiagonal;
   };
 
   const printBoard = () => {
@@ -137,6 +180,14 @@ const GameController = (() => {
     winExists = findConsecutiveTokens.checkConsecutive(arr.getRowArray);
     if (!winExists) {
       winExists = findConsecutiveTokens.checkConsecutive(arr.getColumnArray);
+      if (!winExists) {
+        winExists = findConsecutiveTokens.checkConsecutive(arr.getPrimaryArray);
+        if (!winExists) {
+          winExists = findConsecutiveTokens.checkConsecutive(
+            arr.getSecondaryArray,
+          );
+        }
+      }
     }
     return winExists;
   };
