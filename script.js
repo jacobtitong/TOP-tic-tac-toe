@@ -227,18 +227,35 @@ const GameController = (() => {
   };
 
   const getActivePlayer = () => activePlayer;
+  const getWinStatus = () => winExists;
+  const getBoardStatus = () => boardFull;
 
-  return { playRound, restartGame, getActivePlayer };
+  return {
+    playRound,
+    restartGame,
+    getActivePlayer,
+    getWinStatus,
+    getBoardStatus,
+  };
 })();
 
 const ScreenController = (() => {
   const gameStatus = document.querySelector(".game-status");
   const board = document.querySelector(".board");
-  let allButtons;
 
-  const renderStatus = (status) => {
-    gameStatus.textContent = `${status}`;
+  const renderStatus = () => {
+    if (GameController.getWinStatus()) {
+      gameStatus.textContent = `${GameController.getActivePlayer().name} wins!`;
+      return;
+    }
+
+    if (GameController.getBoardStatus()) {
+      gameStatus.textContent = `Tie! Try again.`;
+      return;
+    }
+    gameStatus.textContent = `It's ${GameController.getActivePlayer().name}'s turn.`;
   };
+  renderStatus();
 
   const renderBoard = () => {
     board.textContent = "";
@@ -266,6 +283,7 @@ const ScreenController = (() => {
       Number(selectedCell.row),
       Number(selectedCell.column),
     );
+    renderStatus();
     renderBoard();
   }
 
