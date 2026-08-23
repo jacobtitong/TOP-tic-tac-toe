@@ -1,5 +1,6 @@
 const GameBoard = (() => {
   let board = [];
+  initializeBoard();
 
   function Cell() {
     let value = 0;
@@ -12,7 +13,8 @@ const GameBoard = (() => {
     return { addToken, getValue };
   }
 
-  (function initializeBoard() {
+  function initializeBoard() {
+    board = [];
     for (let i = 0; i < 3; i++) {
       const row = [];
       for (let j = 0; j < 3; j++) {
@@ -20,7 +22,7 @@ const GameBoard = (() => {
       }
       board.push(row);
     }
-  })();
+  }
 
   const placeMark = (row, column, playerToken) => {
     if (board[row][column].getValue() != 0) return { status: false };
@@ -92,7 +94,9 @@ const GameBoard = (() => {
 
   const getBoard = () => board;
 
-  return { placeMark, printBoard, getBoard };
+  const restartGame = () => initializeBoard();
+
+  return { placeMark, printBoard, getBoard, restartGame };
 })();
 
 const Players = (() => {
@@ -212,5 +216,11 @@ const GameController = (() => {
     return winExists;
   };
 
-  return { playRound };
+  const restartGame = () => {
+    activePlayer = playerDetails[0];
+    GameBoard.restartGame();
+    printRound();
+  };
+
+  return { playRound, restartGame };
 })();
