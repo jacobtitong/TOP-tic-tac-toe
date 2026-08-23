@@ -137,6 +137,14 @@ const GameController = (() => {
       return;
     }
     const winExists = checkPotentialWin(placed, activePlayer);
+    const boardFull = checkBoardStatus();
+
+    if (boardFull) {
+      console.log("Tie! Try again.");
+      GameBoard.printBoard();
+      return;
+    }
+
     if (winExists) {
       console.log(`${activePlayer.name} wins!`);
       GameBoard.printBoard();
@@ -152,6 +160,18 @@ const GameController = (() => {
   };
 
   printRound();
+
+  const checkBoardStatus = () => {
+    let full = true;
+    GameBoard.getBoard().forEach((row) => {
+      row.forEach((cell) => {
+        if (cell.getValue() == 0) {
+          full = false;
+        }
+      });
+    });
+    return full;
+  };
 
   const checkPotentialWin = (arr, activePlayer) => {
     let winExists = false;
