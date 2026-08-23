@@ -1,4 +1,3 @@
-// Single instances: GameBoard, GameController, Player
 const GameBoard = (() => {
   let board = [];
 
@@ -13,8 +12,9 @@ const GameBoard = (() => {
   })();
 
   const placeMark = (row, column, playerToken) => {
+    if (board[row][column] != 0) return false;
     board[row][column] = playerToken;
-    printBoard();
+    return true;
   };
 
   const printBoard = () => {
@@ -23,7 +23,7 @@ const GameBoard = (() => {
 
   const getBoard = () => board;
 
-  return { placeMark, getBoard };
+  return { placeMark, printBoard, getBoard };
 })();
 
 const Players = (() => {
@@ -46,4 +46,36 @@ const Players = (() => {
   const getPlayers = () => playerDetails;
 
   return { setPlayerNames, getPlayers };
+})();
+
+const GameController = (() => {
+  const playerDetails = Players.getPlayers();
+  let activePlayer = playerDetails[0];
+
+  const switchActivePlayer = () => {
+    if (activePlayer == playerDetails[0]) {
+      activePlayer = playerDetails[1];
+      return;
+    }
+    activePlayer = playerDetails[0];
+  };
+
+  const playRound = (row, column) => {
+    const placed = GameBoard.placeMark(row, column, activePlayer.token);
+    if (!placed) {
+      console.log("Position already taken! Try again.");
+      printRound();
+      return;
+    }
+    switchActivePlayer();
+    printRound();
+  };
+
+  const printRound = () => {
+    GameBoard.printBoard();
+    console.log(`It's ${activePlayer.name}'s turn!`);
+  };
+  printRound();
+
+  return { playRound };
 })();
