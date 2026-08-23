@@ -222,5 +222,31 @@ const GameController = (() => {
     printRound();
   };
 
-  return { playRound, restartGame };
+  const getActivePlayer = () => activePlayer;
+
+  return { playRound, restartGame, getActivePlayer };
+})();
+
+const ScreenController = (() => {
+  const gameStatus = document.querySelector(".game-status");
+  const board = document.querySelector(".board");
+
+  const renderStatus = (status) => {
+    gameStatus.textContent = `${status}`;
+  };
+
+  const renderBoard = () => {
+    GameBoard.getBoard().forEach((row, rowIndex) => {
+      row.forEach((cell, columnIndex) => {
+        const button = document.createElement("button");
+        button.classList.add("cell");
+        button.textContent = cell.getValue();
+        button.dataset.column = columnIndex;
+        button.dataset.row = rowIndex;
+        button.dataset.player = cell.getValue();
+        board.appendChild(button);
+      });
+    });
+  };
+  renderBoard();
 })();
