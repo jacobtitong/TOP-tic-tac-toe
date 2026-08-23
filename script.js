@@ -26,12 +26,18 @@ const GameBoard = (() => {
     if (board[row][column].getValue() != 0) return { status: false };
     board[row][column].addToken(playerToken);
     const getRowArray = setRowArray(row);
-    return { status: true, getRowArray };
+    const getColumnArray = setColumnArray(column);
+    return { status: true, getRowArray, getColumnArray };
   };
 
   const setRowArray = (row) => {
-    let rowArray = board[row];
+    const rowArray = board[row];
     return rowArray;
+  };
+
+  const setColumnArray = (column) => {
+    const columnArray = board.map((row) => row[column]);
+    return columnArray;
   };
 
   const printBoard = () => {
@@ -90,6 +96,7 @@ const GameController = (() => {
     const winExists = checkPotentialWin(placed, activePlayer);
     if (winExists) {
       console.log(`${activePlayer.name} wins!`);
+      GameBoard.printBoard();
       return;
     }
     switchActivePlayer();
@@ -114,13 +121,11 @@ const GameController = (() => {
           .join("")
           .split("0")
           .filter((item) => item !== "");
-        console.log(consecutiveTokens);
         return getWin(consecutiveTokens);
       };
       const getWin = (consecutiveTokens) => {
         let win = false;
         consecutiveTokens.forEach((consecutiveItems) => {
-          console.log(consecutiveItems.length);
           if (consecutiveItems.length == 3) {
             win = true;
           }
@@ -130,6 +135,9 @@ const GameController = (() => {
       return { checkConsecutive };
     })();
     winExists = findConsecutiveTokens.checkConsecutive(arr.getRowArray);
+    if (!winExists) {
+      winExists = findConsecutiveTokens.checkConsecutive(arr.getColumnArray);
+    }
     return winExists;
   };
 
