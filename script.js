@@ -71,8 +71,8 @@ const GameBoard = (() => {
     let bottomMostRow = 2;
     let leftMostColumn = 0;
     const rowRange = bottomMostRow - row;
-    const rowColumn = column - leftMostColumn;
-    const range = Math.min(rowRange, rowColumn);
+    const columnRange = column - leftMostColumn;
+    const range = Math.min(rowRange, columnRange);
     bottomMostRow = row + range;
     leftMostColumn = column - range;
     let currentCell = board[bottomMostRow][leftMostColumn];
@@ -124,6 +124,8 @@ const Players = (() => {
 const GameController = (() => {
   const playerDetails = Players.getPlayers();
   let activePlayer = playerDetails[0];
+  let winExists = false;
+  let boardFull = false;
 
   const switchActivePlayer = () => {
     if (activePlayer == playerDetails[0]) {
@@ -134,23 +136,25 @@ const GameController = (() => {
   };
 
   const playRound = (row, column) => {
+    if (winExists || boardFull) return;
+
     const placed = GameBoard.placeMark(row, column, activePlayer.token);
     if (!placed.status) {
       console.log("Position already taken! Try again.");
       printRound();
       return;
     }
-    const winExists = checkPotentialWin(placed, activePlayer);
-    const boardFull = checkBoardStatus();
+    winExists = checkPotentialWin(placed, activePlayer);
+    boardFull = checkBoardStatus();
 
-    if (boardFull) {
-      console.log("Tie! Try again.");
+    if (winExists) {
+      console.log(`${activePlayer.name} wins!`);
       GameBoard.printBoard();
       return;
     }
 
-    if (winExists) {
-      console.log(`${activePlayer.name} wins!`);
+    if (boardFull) {
+      console.log("Tie! Try again.");
       GameBoard.printBoard();
       return;
     }
@@ -230,12 +234,14 @@ const GameController = (() => {
 const ScreenController = (() => {
   const gameStatus = document.querySelector(".game-status");
   const board = document.querySelector(".board");
+  let allButtons;
 
   const renderStatus = (status) => {
     gameStatus.textContent = `${status}`;
   };
 
   const renderBoard = () => {
+    board.textContent = "";
     GameBoard.getBoard().forEach((row, rowIndex) => {
       row.forEach((cell, columnIndex) => {
         const button = document.createElement("button");
@@ -249,4 +255,19 @@ const ScreenController = (() => {
     });
   };
   renderBoard();
+
+  function addToken(e) {
+    const selectedCell = {
+      row: e.target.dataset.row,
+      column: e.target.dataset.column,
+    };
+    if (!selectedCell.row || !selectedCell.column) return;
+    GameController.playRound(
+      Number(selectedCell.row),
+      Number(selectedCell.column),
+    );
+    renderBoard();
+  }
+
+  board.addEventListener("click", addToken);
 })();
