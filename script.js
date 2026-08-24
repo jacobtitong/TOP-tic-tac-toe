@@ -228,7 +228,9 @@ const GameController = (() => {
 
   const getActivePlayer = () => activePlayer;
   const getWinStatus = () => winExists;
+  const restartWinStatus = () => (winExists = false);
   const getBoardStatus = () => boardFull;
+  const restartBoardStatus = () => (boardFull = false);
 
   return {
     playRound,
@@ -236,12 +238,15 @@ const GameController = (() => {
     getActivePlayer,
     getWinStatus,
     getBoardStatus,
+    restartWinStatus,
+    restartBoardStatus,
   };
 })();
 
 const ScreenController = () => {
   const gameStatus = document.querySelector(".game-status");
   const board = document.querySelector(".board");
+  const gameContainer = document.querySelector(".game-container");
 
   const renderStatus = () => {
     if (GameController.getWinStatus()) {
@@ -273,21 +278,38 @@ const ScreenController = () => {
   };
   renderBoard();
 
+  const getGameContainer = () => gameContainer;
+
   function addToken(e) {
+    if (GameController.getWinStatus() || GameController.getBoardStatus())
+      return;
     const selectedCell = {
       row: e.target.dataset.row,
       column: e.target.dataset.column,
     };
     if (!selectedCell.row || !selectedCell.column) return;
+    const restartButton = document.querySelector(".restart-button");
     GameController.playRound(
       Number(selectedCell.row),
       Number(selectedCell.column),
     );
     renderStatus();
     renderBoard();
+    if (GameController.getWinStatus() || GameController.getBoardStatus()) {
+      restartButton.removeAttribute("style");
+      restartButton.addEventListener("click", (e) => {
+        GameController.restartGame();
+        GameController.restartWinStatus();
+        GameController.restartBoardStatus();
+        renderStatus();
+        renderBoard();
+        restartButton.setAttribute("style", "display: none");
+      });
+    }
   }
 
   board.addEventListener("click", addToken);
+  return { getGameContainer };
 };
 
 const startMenu = (() => {
@@ -298,23 +320,22 @@ const startMenu = (() => {
   const displayForm = () => {
     startUI.setAttribute("style", "display: none");
     form.removeAttribute("style");
-    getForm(form);
+    getForm();
   };
 
   const getForm = () => {
-    const gameContainer = document.querySelector(".game-container");
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const formData = new FormData(form);
       const formDataObj = Object.fromEntries(formData);
       form.setAttribute("style", "display: none");
-      gameContainer.removeAttribute("style");
       console.log(formDataObj);
       Players.setPlayerNames(
         formDataObj["player-one"],
         formDataObj["player-two"],
       );
-      ScreenController();
+      const gameContainer = ScreenController().getGameContainer();
+      gameContainer.removeAttribute("style");
     });
   };
 
