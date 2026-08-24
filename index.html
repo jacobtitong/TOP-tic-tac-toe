@@ -11,9 +11,25 @@
     <script src="script.js" defer></script>
   </head>
   <body>
-    <div class="game-container">
+    <div class="game-container" style="display: none">
       <h1 class="game-status"></h1>
       <div class="board"></div>
+    </div>
+    <div class="start-menu">
+      <div class="start">
+        <h1>Tic-Tac-Toe Project</h1>
+        <button class="play-button">Play Game</button>
+      </div>
+      <form action="" style="display: none">
+        <p>Enter player names:</p>
+        <label for="player-one">
+          <input type="text" name="player-one" id="player-one" />
+        </label>
+        <label for="player-two">
+          <input type="text" name="player-two" id="player-two" />
+        </label>
+        <button type="submit">Start</button>
+      </form>
     </div>
   </body>
 </html>

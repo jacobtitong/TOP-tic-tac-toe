@@ -289,3 +289,16 @@ const ScreenController = (() => {
 
   board.addEventListener("click", addToken);
 })();
+
+const startMenu = (() => {
+  const startButton = document.querySelector(".play-button");
+  const startUI = document.querySelector(".start");
+  const form = document.querySelector("form");
+
+  const displayForm = () => {
+    startUI.setAttribute("style", "display: none");
+    form.removeAttribute("style");
+  };
+
+  startButton.addEventListener("click", displayForm);
+})();
