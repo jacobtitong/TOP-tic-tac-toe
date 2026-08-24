@@ -239,7 +239,7 @@ const GameController = (() => {
   };
 })();
 
-const ScreenController = (() => {
+const ScreenController = () => {
   const gameStatus = document.querySelector(".game-status");
   const board = document.querySelector(".board");
 
@@ -288,7 +288,7 @@ const ScreenController = (() => {
   }
 
   board.addEventListener("click", addToken);
-})();
+};
 
 const startMenu = (() => {
   const startButton = document.querySelector(".play-button");
@@ -298,6 +298,24 @@ const startMenu = (() => {
   const displayForm = () => {
     startUI.setAttribute("style", "display: none");
     form.removeAttribute("style");
+    getForm(form);
+  };
+
+  const getForm = () => {
+    const gameContainer = document.querySelector(".game-container");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const formDataObj = Object.fromEntries(formData);
+      form.setAttribute("style", "display: none");
+      gameContainer.removeAttribute("style");
+      console.log(formDataObj);
+      Players.setPlayerNames(
+        formDataObj["player-one"],
+        formDataObj["player-two"],
+      );
+      ScreenController();
+    });
   };
 
   startButton.addEventListener("click", displayForm);
