@@ -247,6 +247,8 @@ const ScreenController = () => {
   const gameStatus = document.querySelector(".game-status");
   const board = document.querySelector(".board");
   const gameContainer = document.querySelector(".game-container");
+  const restartButton = document.querySelector(".restart-button");
+  const backButton = document.querySelector(".back-button");
 
   const renderStatus = () => {
     if (GameController.getWinStatus()) {
@@ -288,7 +290,6 @@ const ScreenController = () => {
       column: e.target.dataset.column,
     };
     if (!selectedCell.row || !selectedCell.column) return;
-    const restartButton = document.querySelector(".restart-button");
     GameController.playRound(
       Number(selectedCell.row),
       Number(selectedCell.column),
@@ -296,17 +297,34 @@ const ScreenController = () => {
     renderStatus();
     renderBoard();
     if (GameController.getWinStatus() || GameController.getBoardStatus()) {
+      backButton.removeAttribute("style");
       restartButton.removeAttribute("style");
-      restartButton.addEventListener("click", (e) => {
-        GameController.restartGame();
-        GameController.restartWinStatus();
-        GameController.restartBoardStatus();
-        renderStatus();
-        renderBoard();
-        restartButton.setAttribute("style", "display: none");
-      });
     }
   }
+
+  const listenBackButton = (() => {
+    backButton.addEventListener("click", (e) => {
+      GameController.restartGame();
+      GameController.restartWinStatus();
+      GameController.restartBoardStatus();
+      gameContainer.setAttribute("style", "display: none");
+      startMenu.getStartUI().removeAttribute("style");
+      restartButton.setAttribute("style", "display: none");
+      backButton.setAttribute("style", "display: none");
+    });
+  })();
+
+  const listenRestartButton = (() => {
+    restartButton.addEventListener("click", (e) => {
+      GameController.restartGame();
+      GameController.restartWinStatus();
+      GameController.restartBoardStatus();
+      renderStatus();
+      renderBoard();
+      restartButton.setAttribute("style", "display: none");
+      backButton.setAttribute("style", "display: none");
+    });
+  })();
 
   board.addEventListener("click", addToken);
   return { getGameContainer };
@@ -320,10 +338,9 @@ const startMenu = (() => {
   const displayForm = () => {
     startUI.setAttribute("style", "display: none");
     form.removeAttribute("style");
-    getForm();
   };
 
-  const getForm = () => {
+  const listenForm = (() => {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const formData = new FormData(form);
@@ -336,8 +353,11 @@ const startMenu = (() => {
       );
       const gameContainer = ScreenController().getGameContainer();
       gameContainer.removeAttribute("style");
+      form.reset();
     });
-  };
+  })();
 
   startButton.addEventListener("click", displayForm);
+  const getStartUI = () => startUI;
+  return { getStartUI };
 })();
