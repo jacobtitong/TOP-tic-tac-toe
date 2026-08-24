@@ -103,11 +103,11 @@ const Players = (() => {
   const playerDetails = [
     {
       name: "Player One",
-      token: 1,
+      token: "X",
     },
     {
       name: "Player Two",
-      token: 2,
+      token: "O",
     },
   ];
 
@@ -268,7 +268,7 @@ const ScreenController = () => {
       row.forEach((cell, columnIndex) => {
         const button = document.createElement("button");
         button.classList.add("cell");
-        button.textContent = cell.getValue();
+        button.textContent = cell.getValue() == 0 ? "" : cell.getValue();
         button.dataset.column = columnIndex;
         button.dataset.row = rowIndex;
         button.dataset.player = cell.getValue();

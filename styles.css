@@ -8,3 +8,13 @@
   background: none;
   border: none;
 }
+
+.cell[data-row="0"],
+.cell[data-row="1"] {
+  border-bottom: solid 1px black;
+}
+
+.cell[data-column="0"],
+.cell[data-column="1"] {
+  border-right: solid 1px black;
+}
